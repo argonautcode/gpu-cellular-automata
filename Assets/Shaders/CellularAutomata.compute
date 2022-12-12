@@ -1,0 +1,45 @@
+#pragma kernel LifeGame
+
+float Width;
+float Height;
+float4 Rules[9];
+
+RWTexture2D<float4> Input;
+RWTexture2D<float4> Output;
+
+[numthreads(8,8,1)]
+void LifeGame (uint3 id : SV_DispatchThreadID)
+{
+    float sum = 0.0;
+    for (int x = -1; x <= 1; x++) {
+        for (int y = -1; y <= 1; y++) {
+            if (x == 0 && y == 0) continue;
+            int fx = ((int) id.x + x) % Width;
+            if (fx < 0.0) fx += Width;
+            int fy = ((int) id.y + y) % Height;
+            if (fy < 0.0) fy += Height;
+            sum += Input[float2(fx, fy)].x;
+        }
+    }
+
+    int count = (int) sum;
+    if (Input[id.xy].x > 0.5) {
+        Output[id.xy] = float4(float3(1.0, 1.0, 1.0) * Rules[count].y, 1.0);
+    } else {
+        Output[id.xy] = float4(float3(1.0, 1.0, 1.0) * Rules[count].x, 1.0);
+    }
+
+    /*if (Input[id.xy].x > 0.5) {
+        for (int i = 0; i < 9; i++) {
+            if (sum > (i - 0.5) && sum < (i + 0.5)) {
+                Output[id.xy] = float4(float3(1.0, 1.0, 1.0) * Rules[i + 9], 1.0);
+            }
+        }
+    } else {
+        for (int i = 0; i < 9; i++) {
+            if (sum > (i - 0.5) && sum < (i + 0.5)) {
+                Output[id.xy] = float4(float3(1.0, 1.0, 1.0) * Rules[i], 1.0);
+            }
+        }
+    }*/
+}

@@ -1,0 +1,28 @@
+#pragma kernel FancyGrid
+#pragma kernel HeatTracker
+
+float CellSize;
+float3 Color1;
+float3 Color2;
+
+RWTexture2D<float4> Input;
+RWTexture2D<float4> Output;
+
+[numthreads(8,8,1)]
+void HeatTracker (uint3 id : SV_DispatchThreadID)
+{
+    Output[id.xy] = lerp(Output[id.xy], Input[id.xy], 0.5);
+}
+
+[numthreads(8,8,1)]
+void FancyGrid (uint3 id : SV_DispatchThreadID)
+{
+    float level = Input[floor(id.xy / CellSize)].x;
+
+    float2 cell = (floor(id.xy / CellSize) + float2(0.5, 0.5)) * CellSize;
+    float outerMask = step(distance(id.xy, cell), CellSize * 0.4 * (0.6 + 0.4 * level));
+    float innerMask = 1.0 - step(distance(id.xy, cell), CellSize * 0.3 * (0.6 + 0.4 * level));
+    float mask = 1.0 - step(outerMask + innerMask, 1.5);
+  
+    Output[id.xy] = float4(lerp(Color1, Color2, level), mask * (0.4 + 0.6 * level));
+}
