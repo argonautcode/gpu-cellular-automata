@@ -28,18 +28,4 @@ void LifeGame (uint3 id : SV_DispatchThreadID)
     } else {
         Output[id.xy] = float4(float3(1.0, 1.0, 1.0) * Rules[count].x, 1.0);
     }
-
-    /*if (Input[id.xy].x > 0.5) {
-        for (int i = 0; i < 9; i++) {
-            if (sum > (i - 0.5) && sum < (i + 0.5)) {
-                Output[id.xy] = float4(float3(1.0, 1.0, 1.0) * Rules[i + 9], 1.0);
-            }
-        }
-    } else {
-        for (int i = 0; i < 9; i++) {
-            if (sum > (i - 0.5) && sum < (i + 0.5)) {
-                Output[id.xy] = float4(float3(1.0, 1.0, 1.0) * Rules[i], 1.0);
-            }
-        }
-    }*/
 }
